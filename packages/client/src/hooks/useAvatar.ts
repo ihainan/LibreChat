@@ -23,6 +23,7 @@ const useAvatar = (user: TUser | undefined) => {
 
     const avatar = createAvatar(initials, {
       seed,
+      chars: 1,
       fontFamily: ['Verdana'],
       fontSize: 36,
       backgroundType: ['solid'],

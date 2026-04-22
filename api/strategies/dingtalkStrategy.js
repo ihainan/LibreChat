@@ -23,6 +23,7 @@ util.inherits(DingTalkStrategy, passport.Strategy);
 DingTalkStrategy.prototype.authenticate = function (req) {
   const self = this;
   const authCode = req.query.authCode;
+  logger.info(`[DingTalk] authenticate called, hasAuthCode=${!!authCode}`);
 
   if (!authCode) {
     const params = new URLSearchParams({
@@ -72,7 +73,8 @@ DingTalkStrategy.prototype.authenticate = function (req) {
         if (!user) return self.fail({ message: 'Authentication failed' });
 
         try {
-          await provisionNewApiToken(userInfo.unionId, user.id, userInfo);
+          const userId = user._id?.toString() ?? user.id;
+          await provisionNewApiToken(userInfo.unionId, userId, userInfo);
         } catch (provisionErr) {
           logger.warn('[DingTalk] provision token failed (non-fatal):', provisionErr.message);
         }
@@ -82,7 +84,11 @@ DingTalkStrategy.prototype.authenticate = function (req) {
 
       self._verify(accessToken, null, null, profile, verified);
     } catch (err) {
-      logger.error('[DingTalk] authenticate error:', err.message);
+      const status = err?.response?.status;
+      logger.error('[DingTalk] authenticate error:', err.message, 'status:', status);
+      if (status === 400 || status === 401) {
+        return self.fail({ message: `DingTalk auth failed (${status}): ${err.message}` });
+      }
       return self.error(err);
     }
   })();
