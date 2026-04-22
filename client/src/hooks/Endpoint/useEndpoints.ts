@@ -98,7 +98,7 @@ export const useEndpoints = ({
       // Base result object with formatted default icon
       const result: Endpoint = {
         value: ep,
-        label: alternateName[ep] || ep,
+        label: getEndpointField(endpointsConfig, ep, 'label') || alternateName[ep] || ep,
         hasModels,
         icon: Icon
           ? React.createElement(Icon, {

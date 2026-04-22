@@ -165,6 +165,7 @@ const MessageEndpointIcon: React.FC<IconProps> = (props) => {
           </div>
         </div>
       ),
+      bg: '#4a5568',
       name: endpoint,
     },
   };

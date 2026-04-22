@@ -212,7 +212,13 @@ export function createLoadConfigModels(deps: LoadConfigModelsDeps) {
         const defaults = (endpoint.models?.default ?? []).map((m) =>
           typeof m === 'string' ? m : m.name,
         );
-        modelsConfig[name] = !modelData?.length ? defaults : modelData;
+        if (!modelData?.length) {
+          modelsConfig[name] = defaults;
+        } else {
+          const defaultsInFetched = defaults.filter((d) => modelData.includes(d));
+          const rest = modelData.filter((m) => !defaults.includes(m));
+          modelsConfig[name] = [...defaultsInFetched, ...rest];
+        }
       }
     }
 

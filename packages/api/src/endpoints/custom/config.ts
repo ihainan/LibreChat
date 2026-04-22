@@ -32,6 +32,7 @@ export function loadCustomEndpointsConfig(
         baseURL,
         apiKey,
         name: configName,
+        label,
         iconURL,
         modelDisplayLabel,
         customParams,
@@ -46,6 +47,7 @@ export function loadCustomEndpointsConfig(
         userProvide: isUserProvided(resolvedApiKey),
         userProvideURL: isUserProvided(resolvedBaseURL),
         customParams,
+        label,
         modelDisplayLabel,
         iconURL,
       };

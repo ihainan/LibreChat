@@ -370,6 +370,7 @@ export type TConfig = {
   allowedProviders?: (string | EModelEndpoint)[];
   plugins?: Record<string, string>;
   name?: string;
+  label?: string;
   iconURL?: string;
   version?: string;
   modelDisplayLabel?: string;

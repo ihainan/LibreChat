@@ -4,7 +4,6 @@ import * as Ariakit from '@ariakit/react';
 import {
   FileSearch,
   ImageUpIcon,
-  FileType2Icon,
   FileImageIcon,
   TerminalSquareIcon,
 } from 'lucide-react';
@@ -185,17 +184,6 @@ const AttachFileMenu = ({
             onAction('image');
           },
           icon: <ImageUpIcon className="icon-md" />,
-        });
-      }
-
-      if (capabilities.contextEnabled) {
-        items.push({
-          label: localize('com_ui_upload_ocr_text'),
-          onClick: () => {
-            setToolResource(EToolResources.context);
-            onAction();
-          },
-          icon: <FileType2Icon className="icon-md" />,
         });
       }
 

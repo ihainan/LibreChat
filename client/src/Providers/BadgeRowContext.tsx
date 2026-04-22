@@ -214,6 +214,7 @@ export default function BadgeRowProvider({
     toolKey: Tools.web_search,
     localStorageKey: LocalStorageKeys.LAST_WEB_SEARCH_TOGGLE_,
     setIsDialogOpen: setWebSearchDialogOpen,
+    defaultPinned: true,
     authConfig: {
       toolId: Tools.web_search,
       queryOptions: { retry: 1 },
