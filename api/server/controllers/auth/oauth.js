@@ -70,7 +70,8 @@ function createOAuthHandler(redirectUri = domains.client) {
         await syncUserEntraGroupMemberships(req.user, req.user.tokenset.access_token);
         setOpenIDAuthTokens(req.user.tokenset, req, res, req.user._id.toString());
       } else {
-        await setAuthTokens(req.user._id, res);
+        const token = await setAuthTokens(req.user._id, res);
+        logger.debug(`[oauthHandler] token set: ${!!token}`);
       }
       res.redirect(redirectUri);
     } catch (err) {

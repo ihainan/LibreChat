@@ -9,7 +9,7 @@ import { apiBaseUrl } from './api-endpoints';
 import { FileSources } from './types/files';
 import { MCPServersSchema } from './mcp';
 
-export const defaultSocialLogins = ['google', 'facebook', 'openid', 'github', 'discord', 'saml'];
+export const defaultSocialLogins = ['google', 'facebook', 'openid', 'github', 'discord', 'saml', 'dingtalk'];
 
 export const defaultRetrievalModels = [
   'gpt-4o',
@@ -826,6 +826,7 @@ export type TStartupConfig = {
   openidLoginEnabled: boolean;
   appleLoginEnabled: boolean;
   samlLoginEnabled: boolean;
+  dingtalkLoginEnabled: boolean;
   openidLabel: string;
   openidImageUrl: string;
   openidAutoRedirect: boolean;

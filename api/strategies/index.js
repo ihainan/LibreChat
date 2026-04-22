@@ -14,10 +14,12 @@ const appleLogin = require('./appleStrategy');
 const { appleAdminLogin } = appleLogin;
 const ldapLogin = require('./ldapStrategy');
 const jwtLogin = require('./jwtStrategy');
+const dingtalkLogin = require('./dingtalkStrategy');
 
 module.exports = {
   appleLogin,
   appleAdminLogin,
+  dingtalkLogin,
   passportLogin,
   googleLogin,
   googleAdminLogin,

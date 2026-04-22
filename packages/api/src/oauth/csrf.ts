@@ -37,7 +37,10 @@ export function shouldUseSecureCookie(): boolean {
     hostname === '::1' ||
     hostname.endsWith('.localhost');
 
-  return isProduction && !isLocalhost;
+  // Don't use secure cookies over plain HTTP — they'd be silently dropped by the browser.
+  const isHttpOnly = /^http:\/\//i.test(domainServer);
+
+  return isProduction && !isLocalhost && !isHttpOnly;
 }
 
 /** Generates an HMAC-based token for OAuth CSRF protection */

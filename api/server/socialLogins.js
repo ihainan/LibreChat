@@ -17,6 +17,7 @@ const {
   appleLogin,
   appleAdminLogin,
   setupSaml,
+  dingtalkLogin,
 } = require('~/strategies');
 const { getLogStores } = require('~/cache');
 
@@ -80,6 +81,9 @@ const configureSocialLogins = async (app) => {
   if (process.env.APPLE_CLIENT_ID && process.env.APPLE_PRIVATE_KEY_PATH) {
     passport.use(appleLogin());
     passport.use('appleAdmin', appleAdminLogin());
+  }
+  if (process.env.DINGTALK_CLIENT_ID && process.env.DINGTALK_CLIENT_SECRET) {
+    passport.use(dingtalkLogin());
   }
   if (
     process.env.OPENID_CLIENT_ID &&

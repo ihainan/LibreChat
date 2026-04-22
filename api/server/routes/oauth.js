@@ -181,6 +181,22 @@ router.post(
 );
 
 /**
+ * DingTalk Routes
+ * Single route handles both the initial redirect (no authCode) and the callback (authCode present).
+ */
+router.get(
+  '/dingtalk',
+  passport.authenticate('dingtalk', {
+    failureRedirect: `${domains.client}/oauth/error`,
+    failureMessage: true,
+    session: false,
+  }),
+  setBalanceConfig,
+  checkDomainAllowed,
+  oauthHandler,
+);
+
+/**
  * SAML Routes
  */
 router.get(

@@ -432,13 +432,13 @@ const setAuthTokens = async (userId, res, _session = null) => {
       expires: new Date(refreshTokenExpires),
       httpOnly: true,
       secure: shouldUseSecureCookie(),
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
     res.cookie('token_provider', 'librechat', {
       expires: new Date(refreshTokenExpires),
       httpOnly: true,
       secure: shouldUseSecureCookie(),
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
     return token;
   } catch (error) {
@@ -509,7 +509,7 @@ const setOpenIDAuthTokens = (tokenset, req, res, userId, existingRefreshToken) =
       expires: expirationDate,
       httpOnly: true,
       secure: shouldUseSecureCookie(),
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
 
     /** Store tokens server-side in session to avoid large cookies */
@@ -526,14 +526,14 @@ const setOpenIDAuthTokens = (tokenset, req, res, userId, existingRefreshToken) =
         expires: expirationDate,
         httpOnly: true,
         secure: shouldUseSecureCookie(),
-        sameSite: 'strict',
+        sameSite: 'lax',
       });
       if (tokenset.id_token) {
         res.cookie('openid_id_token', tokenset.id_token, {
           expires: expirationDate,
           httpOnly: true,
           secure: shouldUseSecureCookie(),
-          sameSite: 'strict',
+          sameSite: 'lax',
         });
       }
     }
@@ -543,7 +543,7 @@ const setOpenIDAuthTokens = (tokenset, req, res, userId, existingRefreshToken) =
       expires: expirationDate,
       httpOnly: true,
       secure: shouldUseSecureCookie(),
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
     if (userId && isEnabled(process.env.OPENID_REUSE_TOKENS)) {
       /** JWT-signed user ID cookie for image path validation when OPENID_REUSE_TOKENS is enabled */
@@ -554,7 +554,7 @@ const setOpenIDAuthTokens = (tokenset, req, res, userId, existingRefreshToken) =
         expires: expirationDate,
         httpOnly: true,
         secure: shouldUseSecureCookie(),
-        sameSite: 'strict',
+        sameSite: 'lax',
       });
     }
     return appAuthToken;

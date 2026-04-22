@@ -89,6 +89,9 @@ const userSchema = new Schema<IUser>(
     appleId: {
       type: String,
     },
+    dingtalkId: {
+      type: String,
+    },
     plugins: {
       type: Array,
     },
@@ -170,6 +173,7 @@ const oAuthIdFields = [
   'githubId',
   'discordId',
   'appleId',
+  'dingtalkId',
 ] as const;
 
 for (const field of oAuthIdFields) {

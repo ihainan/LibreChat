@@ -6,6 +6,7 @@ import {
   DiscordIcon,
   AppleIcon,
   SamlIcon,
+  DingtalkIcon,
 } from '@librechat/client';
 
 import SocialButton from './SocialButton';
@@ -113,6 +114,17 @@ function SocialLoginRender({
         }
         label={startupConfig.samlLabel ? startupConfig.samlLabel : localize('com_auth_saml_login')}
         id="saml"
+      />
+    ),
+    dingtalk: startupConfig.dingtalkLoginEnabled && (
+      <SocialButton
+        key="dingtalk"
+        enabled={startupConfig.dingtalkLoginEnabled}
+        serverDomain={startupConfig.serverDomain}
+        oauthPath="dingtalk"
+        Icon={DingtalkIcon}
+        label={localize('com_auth_dingtalk_login')}
+        id="dingtalk"
       />
     ),
   };

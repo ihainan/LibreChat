@@ -20,6 +20,7 @@ export interface IUser extends Document {
   githubId?: string;
   discordId?: string;
   appleId?: string;
+  dingtalkId?: string;
   plugins?: string[];
   twoFactorEnabled?: boolean;
   totpSecret?: string;
