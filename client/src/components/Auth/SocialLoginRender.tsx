@@ -125,6 +125,7 @@ function SocialLoginRender({
         Icon={DingtalkIcon}
         label={localize('com_auth_dingtalk_login')}
         id="dingtalk"
+        variant="primary"
       />
     ),
   };
@@ -142,7 +143,7 @@ function SocialLoginRender({
             <div className="mt-8" />
           </>
         )}
-        <div className="mt-2">
+        <div className="mt-4 space-y-3">
           {startupConfig.socialLogins?.map((provider) => providerComponents[provider] || null)}
         </div>
       </>

@@ -9,7 +9,6 @@ import Footer from './Footer';
 
 function AuthLayout({
   children,
-  header,
   isFetching,
   startupConfig,
   startupConfigError,
@@ -57,31 +56,44 @@ function AuthLayout({
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-white dark:bg-gray-900">
+    <div className="relative flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
       <Banner />
-      <BlinkAnimation active={isFetching}>
-        <div className="mt-6 h-10 w-full bg-cover">
-          <img
-            src="assets/logo.svg"
-            className="h-full w-full object-contain"
-            alt={localize('com_ui_logo', { 0: startupConfig?.appTitle ?? 'LibreChat' })}
-          />
-        </div>
-      </BlinkAnimation>
-      <DisplayError />
       <div className="absolute bottom-0 left-0 md:m-4">
         <ThemeSelector />
       </div>
-
-      <main className="flex flex-grow items-center justify-center">
-        <div className="w-authPageWidth overflow-hidden bg-white px-6 py-4 dark:bg-gray-900 sm:max-w-md sm:rounded-lg">
-          {!hasStartupConfigError && !isFetching && header && (
-            <h1
-              className="mb-4 text-center text-3xl font-semibold text-black dark:text-white"
-              style={{ userSelect: 'none' }}
-            >
-              {header}
-            </h1>
+      <DisplayError />
+      <main className="flex flex-grow items-center justify-center px-4">
+        <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-white px-8 py-10 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <BlinkAnimation active={isFetching}>
+            <div className="mb-6 flex items-center justify-center gap-4">
+              <img
+                src="assets/logo-xueyuan.png"
+                alt="北京中关村学院"
+                className="h-20 w-20 object-contain"
+              />
+              <span
+                className="select-none text-xl font-light text-gray-400 dark:text-gray-500"
+                aria-hidden="true"
+              >
+                ×
+              </span>
+              <img
+                src="assets/logo-yanjiuyuan.png"
+                alt="中关村人工智能研究院"
+                className="h-20 w-20 object-contain"
+              />
+            </div>
+          </BlinkAnimation>
+          {!hasStartupConfigError && !isFetching && (
+            <div className="mb-6 text-center" style={{ userSelect: 'none' }}>
+              <p className="text-xl font-bold tracking-wider text-[#1a237e] dark:text-blue-300">
+                中关村两院
+              </p>
+              <p className="mt-1 text-sm font-medium tracking-[0.18em] text-gray-500 dark:text-gray-400">
+                LLM 对话平台
+              </p>
+              <div className="mx-auto mt-4 h-px w-16 bg-gray-200 dark:bg-gray-600" />
+            </div>
           )}
           {children}
           {!pathname.includes('2fa') &&

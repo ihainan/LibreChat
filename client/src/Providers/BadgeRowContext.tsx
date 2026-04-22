@@ -122,6 +122,8 @@ export default function BadgeRowProvider({
         } catch (e) {
           console.error('Failed to parse web search toggle value:', e);
         }
+      } else {
+        initialValues[Tools.web_search] = true;
       }
 
       if (fileSearchToggleValue !== null) {
