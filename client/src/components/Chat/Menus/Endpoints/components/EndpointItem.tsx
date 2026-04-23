@@ -18,6 +18,8 @@ interface EndpointItemProps {
   endpointIndex: number;
 }
 
+const hiddenUserKeySettingsEndpoints = new Set(['new-api']);
+
 const SettingsButton = ({
   endpoint,
   className,
@@ -158,6 +160,7 @@ export function EndpointItem({ endpoint, endpointIndex }: EndpointItemProps) {
     () => endpointRequiresUserKey(endpoint.value),
     [endpointRequiresUserKey, endpoint.value],
   );
+  const showKeySettings = isUserProvided && !hiddenUserKeySettingsEndpoints.has(endpoint.value);
 
   const isAssistantsNotLoaded =
     isAssistantsEndpoint(endpoint.value) && endpoint.models === undefined;
@@ -193,7 +196,7 @@ export function EndpointItem({ endpoint, endpointIndex }: EndpointItemProps) {
           <div className="group flex w-full min-w-0 items-center justify-between gap-1.5 py-1 text-sm">
             {renderIconLabel()}
             <div className="flex shrink-0 items-center gap-1">
-              {isUserProvided && (
+              {showKeySettings && (
                 <SettingsButton endpoint={endpoint} handleOpenKeyDialog={handleOpenKeyDialog} />
               )}
               {isEndpointSelected && (
@@ -220,7 +223,7 @@ export function EndpointItem({ endpoint, endpointIndex }: EndpointItemProps) {
       >
         {renderIconLabel()}
         <div className="flex shrink-0 items-center gap-2">
-          {endpointRequiresUserKey(endpoint.value) && (
+          {showKeySettings && (
             <SettingsButton endpoint={endpoint} handleOpenKeyDialog={handleOpenKeyDialog} />
           )}
           {isAssistantsNotLoaded && (
