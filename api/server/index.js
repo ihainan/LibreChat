@@ -22,6 +22,9 @@ const {
   initializeFileStorage,
   updateInterfacePermissions,
   preAuthTenantMiddleware,
+  ensureOrgTree,
+  startOrgTreeRefreshLoop,
+  startUserDeptRefreshCron,
 } = require('@librechat/api');
 const { connectDb, indexSync } = require('~/db');
 const initializeOAuthReconnectManager = require('./services/initializeOAuthReconnectManager');
@@ -227,6 +230,22 @@ const startServer = async () => {
       await initializeOAuthReconnectManager();
     });
     await checkMigrations();
+
+    ensureOrgTree()
+      .then((tree) => {
+        if (tree) {
+          logger.info(`[zgcai] Org tree warmed up: ${tree.size} departments`);
+        } else {
+          logger.warn('[zgcai] Org tree warm-up returned empty — will retry on schedule');
+        }
+      })
+      .catch((err) => logger.error('[zgcai] Org tree warm-up failed:', err));
+    startOrgTreeRefreshLoop();
+    try {
+      startUserDeptRefreshCron();
+    } catch (err) {
+      logger.error('[zgcai] Failed to start user dept refresh cron:', err);
+    }
 
     // Configure stream services (auto-detects Redis from USE_REDIS env var)
     const streamServices = createStreamServices();

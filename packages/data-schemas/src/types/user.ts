@@ -21,6 +21,13 @@ export interface IUser extends Document {
   discordId?: string;
   appleId?: string;
   dingtalkId?: string;
+  dingtalkUserId?: string;
+  departments?: Array<{
+    deptId: number;
+    deptName?: string;
+    fullPath?: string;
+  }>;
+  departmentsSyncedAt?: Date;
   plugins?: string[];
   twoFactorEnabled?: boolean;
   totpSecret?: string;

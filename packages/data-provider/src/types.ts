@@ -208,6 +208,11 @@ export type TUser = {
   personalization?: {
     memories?: boolean;
   };
+  departments?: Array<{
+    deptId: number;
+    deptName?: string;
+    fullPath?: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 };

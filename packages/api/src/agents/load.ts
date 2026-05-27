@@ -17,6 +17,17 @@ import { getCustomEndpointConfig } from '~/app/config';
 
 const { mcp_all, mcp_delimiter } = Constants;
 
+function parseForcedMcpServers(): string[] {
+  const raw = process.env.ZGCAI_FORCED_MCP_SERVERS;
+  if (!raw) {
+    return [];
+  }
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
 export interface LoadAgentDeps {
   getAgent: (searchParameter: { id: string }) => Promise<Agent | null>;
   getMCPServerTools: (
@@ -60,6 +71,9 @@ export async function loadEphemeralAgent(
     for (const mcpServer of modelSpec.mcpServers) {
       mcpServers.add(mcpServer);
     }
+  }
+  for (const forced of parseForcedMcpServers()) {
+    mcpServers.add(forced);
   }
   const tools: string[] = [];
   if (ephemeralAgent?.execute_code === true || modelSpec?.executeCode === true) {

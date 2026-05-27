@@ -51,6 +51,8 @@ export * from './web';
 export * from './cache';
 /* Stream */
 export * from './stream';
+/* ZGCAI: DingTalk dept context */
+export * from './zgcai';
 /* Diagnostics */
 export { memoryDiagnostics } from './utils/memory';
 /* types */

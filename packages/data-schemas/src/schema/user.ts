@@ -23,6 +23,18 @@ const BackupCodeSchema = new Schema(
   { _id: false },
 );
 
+// DingTalk department sub-schema — one user may belong to multiple departments.
+// `fullPath` is the human-readable hierarchy ("中关村两院 > 科研部 > AI核心基础"),
+// resolved from the cached org tree at sync time.
+const DingtalkDeptSchema = new Schema(
+  {
+    deptId: { type: Number, required: true },
+    deptName: { type: String, default: '' },
+    fullPath: { type: String, default: '' },
+  },
+  { _id: false },
+);
+
 const userSchema = new Schema<IUser>(
   {
     name: {
@@ -91,6 +103,18 @@ const userSchema = new Schema<IUser>(
     },
     dingtalkId: {
       type: String,
+    },
+    dingtalkUserId: {
+      type: String,
+      index: true,
+      sparse: true,
+    },
+    departments: {
+      type: [DingtalkDeptSchema],
+      default: undefined,
+    },
+    departmentsSyncedAt: {
+      type: Date,
     },
     plugins: {
       type: Array,

@@ -2,8 +2,11 @@ const util = require('util');
 const axios = require('axios');
 const passport = require('passport');
 const { logger } = require('@librechat/data-schemas');
+const { syncUserDepartments } = require('@librechat/api');
 const socialLogin = require('./socialLogin');
 const { updateUserKey } = require('~/models');
+
+const LOGIN_DEPT_SYNC_TIMEOUT_MS = Number(process.env.DINGTALK_LOGIN_DEPT_SYNC_TIMEOUT_MS) || 5000;
 
 const DINGTALK_TOKEN_URL = 'https://api.dingtalk.com/v1.0/oauth2/userAccessToken';
 const DINGTALK_USER_URL = 'https://api.dingtalk.com/v1.0/contact/users/me';
@@ -79,6 +82,8 @@ DingTalkStrategy.prototype.authenticate = function (req) {
           logger.warn('[DingTalk] provision token failed (non-fatal):', provisionErr.message);
         }
 
+        await syncDepartmentsBestEffort(user, userInfo);
+
         return self.success(user);
       };
 
@@ -93,6 +98,35 @@ DingTalkStrategy.prototype.authenticate = function (req) {
     }
   })();
 };
+
+async function syncDepartmentsBestEffort(user, userInfo) {
+  const userId = user._id?.toString() ?? user.id;
+  if (!userId) {
+    return;
+  }
+  const target = {
+    _id: userId,
+    name: user.name || userInfo?.nick,
+    dingtalkId: userInfo?.unionId,
+    dingtalkUserId: user.dingtalkUserId,
+    departmentsSyncedAt: user.departmentsSyncedAt,
+    departments: user.departments,
+  };
+  const syncPromise = syncUserDepartments(target).catch((err) => {
+    logger.warn('[DingTalk] dept sync failed (non-fatal):', err.message);
+    return null;
+  });
+  const timeoutPromise = new Promise((resolve) => {
+    setTimeout(() => resolve('__timeout__'), LOGIN_DEPT_SYNC_TIMEOUT_MS);
+  });
+  const result = await Promise.race([syncPromise, timeoutPromise]);
+  if (result === '__timeout__') {
+    logger.info(
+      `[DingTalk] dept sync exceeded ${LOGIN_DEPT_SYNC_TIMEOUT_MS}ms — continuing in background`,
+    );
+    syncPromise.catch(() => {});
+  }
+}
 
 async function provisionNewApiToken(dingtalkUnionId, librechatUserId, userInfo) {
   const baseUrl = process.env.NEW_API_BASE_URL;

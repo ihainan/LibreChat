@@ -32,6 +32,8 @@ import { generateArtifactsPrompt } from '~/prompts';
 import { getProviderConfig } from '~/endpoints';
 import { primeResources } from './resources';
 import type { TFilterFilesByAgentAccess } from './resources';
+import { buildUserContextBlock, prependUserContext } from '~/zgcai/context';
+import { triggerBackgroundSyncIfStale } from '~/zgcai/userDept';
 
 /**
  * Fraction of context budget reserved as headroom when no explicit maxContextTokens is set.
@@ -414,6 +416,42 @@ export async function initializeAgent(
       artifacts: agent.artifacts as never,
     });
     agent.additional_instructions = artifactsPromptResult ?? undefined;
+  }
+
+  const reqUser = req.user as unknown as
+    | (TUser & {
+        dingtalkId?: string;
+        dingtalkUserId?: string;
+        departmentsSyncedAt?: Date;
+      })
+    | undefined;
+  if (reqUser?.id) {
+    const departments = reqUser.departments?.map((d) => ({
+      deptId: d.deptId,
+      deptName: d.deptName ?? '',
+      fullPath: d.fullPath ?? '',
+    }));
+    triggerBackgroundSyncIfStale({
+      _id: reqUser.id,
+      name: reqUser.name,
+      dingtalkId: reqUser.dingtalkId,
+      dingtalkUserId: reqUser.dingtalkUserId,
+      departments,
+      departmentsSyncedAt: reqUser.departmentsSyncedAt,
+    });
+    const userContextBlock = buildUserContextBlock({
+      user: {
+        name: reqUser.name,
+        username: reqUser.username,
+        departments,
+      },
+    });
+    if (userContextBlock) {
+      agent.additional_instructions = prependUserContext(
+        agent.additional_instructions,
+        userContextBlock,
+      );
+    }
   }
 
   const agentMaxContextNum = Number(agentMaxContextTokens) || DEFAULT_MAX_CONTEXT_TOKENS;

@@ -424,7 +424,28 @@ export function replaceSpecialVars({ text, user }: { text: string; user?: t.TUse
     result = result.replace(/{{current_user}}/gi, user.name);
   }
 
+  if (/{{user_departments}}/i.test(result)) {
+    result = result.replace(/{{user_departments}}/gi, formatUserDepartments(user));
+  }
+
   return result;
+}
+
+function formatUserDepartments(user?: t.TUser | null): string {
+  const departments = user?.departments;
+  if (!departments || departments.length === 0) {
+    return '';
+  }
+  const lines = departments
+    .map((d) => d.fullPath || d.deptName || '')
+    .filter((s) => s.length > 0);
+  if (lines.length === 0) {
+    return '';
+  }
+  if (lines.length === 1) {
+    return lines[0];
+  }
+  return lines.map((line, idx) => `${idx + 1}. ${line}`).join('; ');
 }
 
 /**
