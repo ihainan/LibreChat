@@ -690,6 +690,7 @@ function createToolInstance({
     name: normalizedToolKey,
     description: description || '',
     responseFormat: AgentConstants.CONTENT_AND_ARTIFACT,
+    verboseParsingErrors: true,
   });
   toolInstance.mcp = true;
   toolInstance.mcpRawServerName = serverName;
