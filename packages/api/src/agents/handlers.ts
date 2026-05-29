@@ -1,5 +1,6 @@
 import { logger } from '@librechat/data-schemas';
 import { GraphEvents, Constants } from '@librechat/agents';
+import { Constants as LCConstants } from 'librechat-data-provider';
 import type {
   LCTool,
   EventHandler,
@@ -66,6 +67,19 @@ export function createToolExecuteHandler(options: ToolExecuteOptions): EventHand
               agentId,
             );
             const toolMap = new Map(loadedTools.map((t) => [t.name, t]));
+            // Allow lookup by bare MCP tool name when the upstream LLM gateway/router
+            // strips the `_mcp_<server>` suffix. Only the first bare→delimited match wins;
+            // genuine collisions across servers are left unaliased so they still error
+            // loudly rather than dispatching to the wrong tool.
+            for (const t of loadedTools) {
+              if (!t.name?.includes(LCConstants.mcp_delimiter)) {
+                continue;
+              }
+              const bare = t.name.split(LCConstants.mcp_delimiter)[0];
+              if (!toolMap.has(bare)) {
+                toolMap.set(bare, t);
+              }
+            }
             const mergedConfigurable = { ...configurable, ...toolConfigurable };
 
             const results: ToolExecuteResult[] = await Promise.all(

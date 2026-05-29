@@ -1292,6 +1292,37 @@ async function loadToolsForExecution({
     (isActionTool(name) ? actionToolNames : regularToolNames).push(name);
   }
 
+  // Resolve bare MCP tool names to their delimited `${tool}_mcp_<server>` form.
+  // Some upstream LLM gateways/routers strip the `_mcp_<server>` suffix when forwarding
+  // tool schemas to the model, so the model emits a bare name that won't match the
+  // delimited registry. Rewrite using toolRegistry, but only when the bare name maps
+  // unambiguously to a single MCP tool.
+  if (toolRegistry && regularToolNames.length > 0) {
+    const bareToDelimited = new Map();
+    for (const registryName of toolRegistry.keys()) {
+      if (!registryName.includes(Constants.mcp_delimiter)) {
+        continue;
+      }
+      const bare = registryName.split(Constants.mcp_delimiter)[0];
+      if (!bareToDelimited.has(bare)) {
+        bareToDelimited.set(bare, registryName);
+      } else if (bareToDelimited.get(bare) !== registryName) {
+        bareToDelimited.set(bare, null);
+      }
+    }
+    for (let i = 0; i < regularToolNames.length; i++) {
+      const n = regularToolNames[i];
+      if (n.includes(Constants.mcp_delimiter)) {
+        continue;
+      }
+      const resolved = bareToDelimited.get(n);
+      if (resolved) {
+        logger.debug(`[loadToolsForExecution] Resolved bare MCP tool "${n}" → "${resolved}"`);
+        regularToolNames[i] = resolved;
+      }
+    }
+  }
+
   if (regularToolNames.length > 0) {
     const includesWebSearch = regularToolNames.includes(Tools.web_search);
     const webSearchCallbacks = includesWebSearch ? createOnSearchResults(res, streamId) : undefined;
