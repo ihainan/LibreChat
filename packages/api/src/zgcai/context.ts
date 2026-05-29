@@ -118,8 +118,13 @@ function buildKnowledgeGraphToolBlock(): string {
 function buildKnowledgeToolBlock(deptCount: number): string {
   const multiDeptGuidance =
     deptCount > 1
-      ? '- 用户属于多个部门时：若问题聚焦某个部门，传该部门 ID；若不确定或问题可能跨部门，**对每个部门 ID 各调一次** search_knowledge 再综合结果。'
+      ? '- 用户属于多个部门时：把上方列出的**所有**部门 ID 放进一个数组，**一次性**传给 dept_id（如 [123, 456]），单次调用即可，**不要**对每个部门分别调用。'
       : '- 调用时直接使用上方"所在部门"中给出的部门 ID。';
+
+  const deptIdParamDesc =
+    deptCount > 1
+      ? '- dept_id：上方"所在部门"中的"部门 ID"。用户有多个部门时传入包含全部 ID 的数组（如 [123, 456]）。'
+      : '- dept_id：上方"所在部门"中的"部门 ID"（数字，也可传单元素数组）。';
 
   return [
     TOOL_BLOCK_HEADER,
@@ -127,7 +132,7 @@ function buildKnowledgeToolBlock(deptCount: number): string {
     '',
     '调用参数：',
     '- user_name：上方"姓名"字段的值',
-    '- dept_id：上方"所在部门"中合适的"部门 ID"（数字）',
+    deptIdParamDesc,
     '- query：自然语言搜索查询',
     '',
     multiDeptGuidance,
