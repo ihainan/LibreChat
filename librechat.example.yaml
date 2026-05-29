@@ -1,6 +1,57 @@
 # For more information, see the Configuration Guide:
 # https://www.librechat.ai/docs/configuration/librechat_yaml
 
+# =============================================================================
+# ZGCAI DEPLOYMENT NOTES (the live `librechat.yaml` is gitignored)
+# -----------------------------------------------------------------------------
+# This fork's runtime `librechat.yaml` carries two ZGCAI-specific customizations
+# that are NOT in this example file. When provisioning a new environment, copy
+# them into the real `librechat.yaml` (they will not appear via git):
+#
+# 1) Two internal MCP servers, force-enabled and hidden from the chat menu.
+#    Pair with `.env`:  ZGCAI_FORCED_MCP_SERVERS=zgcai-knowledge,zgcai-knowledge-graph
+#    (this is what makes both load implicitly for every user).
+#
+#    mcpServers:
+#      zgcai-knowledge:            # document RAG over the dept-scoped knowledge base
+#        type: streamable-http
+#        url: 'http://192.168.100.101:31847/mcp'
+#        chatMenu: false           # hide the on/off toggle from users
+#        startup: true
+#        timeout: 180000
+#        serverInstructions: false
+#      zgcai-knowledge-graph:      # structured entity/relation queries (kg_* tools)
+#        type: streamable-http
+#        url: 'http://192.168.100.101:31857/mcp'
+#        chatMenu: false
+#        startup: true
+#        timeout: 60000
+#        serverInstructions: false
+#
+#    mcpSettings:
+#      allowedDomains:
+#        - '192.168.100.101'       # required for the URLs above to be reachable
+#
+# 2) Custom title prompt on the `new-api` custom endpoint, so conversation
+#    titles follow the user's language instead of defaulting to English.
+#    Without it, the agents library's default completion prompt has no language
+#    instruction and forces "title case conventions" (English-biased).
+#
+#    endpoints:
+#      custom:
+#        - name: 'new-api'
+#          # ...existing fields (label, baseURL, models, etc.)...
+#          titleConvo: true
+#          titleModel: 'smart-router'
+#          titlePrompt: |
+#            Write a concise title (5 words or fewer, no punctuation or quotation marks)
+#            for the conversation below. The title MUST be written in the same language
+#            the user uses in the conversation. Only return the title text itself.
+#
+#            Conversation:
+#            {convo}
+# =============================================================================
+
 # Configuration version (required)
 version: 1.3.8
 
