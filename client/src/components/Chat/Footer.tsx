@@ -26,7 +26,9 @@ function Footer({ className }: { className?: string }) {
 
   const mainContentParts = (
     typeof config?.customFooter === 'string'
-      ? config.customFooter
+      ? // Substitute a {{year}} token with the current year so a configured footer
+        // (e.g. a copyright line) tracks the year automatically without manual edits.
+        config.customFooter.replace(/\{\{\s*year\s*\}\}/gi, String(new Date().getFullYear()))
       : '[LibreChat ' +
         Constants.VERSION +
         '](https://librechat.ai) - ' +
