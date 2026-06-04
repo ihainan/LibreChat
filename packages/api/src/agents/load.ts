@@ -28,6 +28,22 @@ function parseForcedMcpServers(): string[] {
     .filter((s) => s.length > 0);
 }
 
+/**
+ * Default context window for ephemeral agents whose model the token map does not
+ * recognize (e.g. the `smart-router` gateway model). Without this LibreChat falls
+ * back to DEFAULT_MAX_CONTEXT_TOKENS (32000) and emergency-truncates the agent's
+ * working memory mid-run, causing repeated tool calls. Tunable via env; 0/empty
+ * disables the override and restores stock fallback behavior.
+ */
+function getDefaultMaxContextTokens(): number {
+  const raw = process.env.ZGCAI_DEFAULT_MAX_CONTEXT_TOKENS;
+  if (raw === undefined) {
+    return 190000;
+  }
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
 export interface LoadAgentDeps {
   getAgent: (searchParameter: { id: string }) => Promise<Agent | null>;
   getMCPServerTools: (
@@ -59,6 +75,17 @@ export async function loadEphemeralAgent(
   deps: LoadAgentDeps,
 ): Promise<Agent | null> {
   const { model, ...model_parameters } = _m ?? ({} as unknown as AgentModelParameters);
+  // Forced MCP servers (knowledge base + graph) make the agent context heavy. The
+  // gateway model `smart-router` isn't in LibreChat's token map, so without an
+  // explicit value it falls back to 32000 and truncates mid-run. Inject a sane
+  // default unless the caller already set one.
+  const defaultMaxContextTokens = getDefaultMaxContextTokens();
+  if (
+    defaultMaxContextTokens > 0 &&
+    (model_parameters as AgentModelParameters).maxContextTokens == null
+  ) {
+    (model_parameters as AgentModelParameters).maxContextTokens = defaultMaxContextTokens;
+  }
   const modelSpecs = req.config?.modelSpecs as { list?: TModelSpec[] } | undefined;
   let modelSpec: TModelSpec | null = null;
   if (spec != null && spec !== '') {

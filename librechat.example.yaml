@@ -20,12 +20,12 @@
 #        startup: true
 #        timeout: 180000
 #        serverInstructions: false
-#      zgcai-knowledge-graph:      # structured entity/relation queries (kg_* tools)
+#      zgcai-knowledge-graph:      # ask_knowledge_graph: structured entity/relation QA
 #        type: streamable-http
 #        url: 'http://192.168.100.101:31857/mcp'
 #        chatMenu: false
 #        startup: true
-#        timeout: 60000
+#        timeout: 180000           # > internal agent ceiling (KG_AGENT_TIMEOUT_MS=120s)
 #        serverInstructions: false
 #
 #    mcpSettings:
@@ -50,6 +50,13 @@
 #
 #            Conversation:
 #            {convo}
+#
+# 3) REQUIRED `.env` setting for the forced-MCP agents:
+#       ZGCAI_DEFAULT_MAX_CONTEXT_TOKENS=190000
+#    The gateway model `smart-router` is not in LibreChat's token map, so without
+#    this the agent falls back to a 32000-token window and emergency-truncates its
+#    working memory mid-run (the model "forgets" earlier tool results and loops on
+#    repeated tool calls). See the ZGCAI section of `.env.example` for details.
 # =============================================================================
 
 # Configuration version (required)
