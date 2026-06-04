@@ -50,6 +50,11 @@
 #
 #            Conversation:
 #            {convo}
+#          # Lower sampling temperature: the same question was producing very
+#          # different tool-use strategies/keywords run to run. 0.3 reduces that
+#          # variance while keeping some flexibility.
+#          addParams:
+#            temperature: 0.3
 #
 # 3) REQUIRED `.env` setting for the forced-MCP agents:
 #       ZGCAI_DEFAULT_MAX_CONTEXT_TOKENS=190000
