@@ -1,0 +1,19 @@
+services:
+  api:
+    image: librechat-custom
+    build:
+      context: .
+      target: node
+    ports:
+      - "23330:3080"
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /app/.env
+      - type: bind
+        source: ./librechat.yaml
+        target: /app/librechat.yaml
+      - ./images:/app/client/public/images
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+
