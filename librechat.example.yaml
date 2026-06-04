@@ -53,8 +53,13 @@
 #          # Lower sampling temperature: the same question was producing very
 #          # different tool-use strategies/keywords run to run. 0.3 reduces that
 #          # variance while keeping some flexibility.
+#          # max_tokens: explicit output cap so replies aren't truncated by a
+#          # LibreChat/gateway default. Ceiling = smallest backing model's output
+#          # limit (Qwen 3.5 397B = 65536); 32768 stays under it and only reserves
+#          # 32K of the 190K context budget (baseContext = maxContext - max_tokens).
 #          addParams:
 #            temperature: 0.3
+#            max_tokens: 32768
 #
 # 3) REQUIRED `.env` setting for the forced-MCP agents:
 #       ZGCAI_DEFAULT_MAX_CONTEXT_TOKENS=190000
