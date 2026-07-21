@@ -698,6 +698,23 @@ const externalLinkSchema = z.object({
 
 export type TExternalLink = z.infer<typeof externalLinkSchema>;
 
+const suggestionRuleSchema = z.object({
+  match: z
+    .object({
+      deptId: z.number().optional(),
+      name: z.string().optional(),
+    })
+    .optional(),
+  items: z.array(z.string()),
+});
+
+const suggestionsSchema = z.object({
+  default: z.array(z.string()).optional(),
+  departments: z.array(suggestionRuleSchema).optional(),
+});
+
+export type TSuggestions = z.infer<typeof suggestionsSchema>;
+
 export const interfaceSchema = z
   .object({
     privacyPolicy: z
@@ -710,6 +727,7 @@ export const interfaceSchema = z
     customWelcome: z.string().optional(),
     externalAgents: z.array(externalAgentSchema).optional(),
     externalLinks: z.array(externalLinkSchema).optional(),
+    suggestions: suggestionsSchema.optional(),
     mcpServers: mcpServersSchema.optional(),
     modelSelect: z.boolean().optional(),
     parameters: z.boolean().optional(),

@@ -40,6 +40,7 @@ export async function loadDefaultInterface({
     customWelcome: interfaceConfig?.customWelcome ?? defaults.customWelcome,
     externalAgents: interfaceConfig?.externalAgents,
     externalLinks: interfaceConfig?.externalLinks,
+    suggestions: interfaceConfig?.suggestions,
 
     // Permissions - only include if explicitly configured
     bookmarks: interfaceConfig?.bookmarks,

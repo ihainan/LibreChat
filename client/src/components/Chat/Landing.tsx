@@ -132,6 +132,15 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     return margin;
   }, [lineCount, description, textHasMultipleLines, contentHeight]);
 
+  const deptLabel = Array.from(
+    new Set(
+      (user?.departments ?? [])
+        .map((d) => d.deptName || d.fullPath || '')
+        .filter((label) => label.length > 0),
+    ),
+  ).join(' · ');
+  const showDeptEyebrow = !name && deptLabel.length > 0;
+
   const greetingText =
     typeof startupConfig?.interface?.customWelcome === 'string'
       ? getGreeting()
@@ -142,6 +151,11 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
       className={`flex h-full transform-gpu flex-col items-center justify-center pb-16 transition-all duration-200 ${centerFormOnLanding ? 'max-h-full sm:max-h-0' : 'max-h-full'} ${getDynamicMargin}`}
     >
       <div ref={contentRef} className="flex flex-col items-center gap-0 p-2">
+        {showDeptEyebrow && (
+          <div className="mb-2 max-w-md text-balance text-center text-sm font-medium text-text-secondary">
+            {deptLabel}
+          </div>
+        )}
         <div
           className={`flex ${textHasMultipleLines ? 'flex-col' : 'flex-col md:flex-row'} items-center justify-center gap-2`}
         >

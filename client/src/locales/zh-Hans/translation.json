@@ -1268,6 +1268,7 @@
   "com_ui_stop": "停止",
   "com_ui_storage": "存储",
   "com_ui_submit": "提交",
+  "com_ui_suggestions": "猜你想问",
   "com_ui_support_contact": "联系支持",
   "com_ui_support_contact_email": "邮箱",
   "com_ui_support_contact_email_invalid": "请输入有效的邮箱地址",
