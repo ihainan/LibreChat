@@ -680,6 +680,24 @@ const mcpServersSchema = z
 
 export type TMcpServersConfig = z.infer<typeof mcpServersSchema>;
 
+const externalAgentSchema = z.object({
+  name: z.string(),
+  url: z.string(),
+  iconURL: z.string().optional(),
+  description: z.string().optional(),
+});
+
+export type TExternalAgent = z.infer<typeof externalAgentSchema>;
+
+const externalLinkSchema = z.object({
+  name: z.string(),
+  url: z.string(),
+  iconURL: z.string().optional(),
+  icon: z.string().optional(),
+});
+
+export type TExternalLink = z.infer<typeof externalLinkSchema>;
+
 export const interfaceSchema = z
   .object({
     privacyPolicy: z
@@ -690,6 +708,8 @@ export const interfaceSchema = z
       .optional(),
     termsOfService: termsOfServiceSchema.optional(),
     customWelcome: z.string().optional(),
+    externalAgents: z.array(externalAgentSchema).optional(),
+    externalLinks: z.array(externalLinkSchema).optional(),
     mcpServers: mcpServersSchema.optional(),
     modelSelect: z.boolean().optional(),
     parameters: z.boolean().optional(),

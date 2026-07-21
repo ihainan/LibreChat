@@ -5,6 +5,7 @@ import {
   Brain,
   Bookmark,
   NotebookPen,
+  ExternalLink,
   ArrowRightToLine,
   SlidersHorizontal,
 } from 'lucide-react';
@@ -17,6 +18,7 @@ import {
   isAssistantsEndpoint,
 } from 'librechat-data-provider';
 import type { TInterfaceConfig, TEndpointsConfig } from 'librechat-data-provider';
+import type { TranslationKeys } from '~/hooks';
 import type { NavLink } from '~/common';
 import MCPBuilderPanel from '~/components/SidePanel/MCPBuilder/MCPBuilderPanel';
 import AgentPanelSwitch from '~/components/SidePanel/Agents/AgentPanelSwitch';
@@ -24,6 +26,10 @@ import BookmarkPanel from '~/components/SidePanel/Bookmarks/BookmarkPanel';
 import PanelSwitch from '~/components/SidePanel/Builder/PanelSwitch';
 import Parameters from '~/components/SidePanel/Parameters/Panel';
 import { MemoryPanel } from '~/components/SidePanel/Memories';
+import ExternalAgentsPanel from '~/components/SidePanel/ExternalAgents/Panel';
+import AssistantIcon from '~/components/SidePanel/ExternalAgents/icon';
+import { makeImageIcon } from '~/components/SidePanel/ExternalLinks/icon';
+import { builtinLinkIcons } from '~/components/SidePanel/ExternalLinks/icons';
 import FilesPanel from '~/components/SidePanel/Files/Panel';
 import { useHasAccess, useMCPServerManager } from '~/hooks';
 import { PromptsAccordion } from '~/components/Prompts';
@@ -81,6 +87,31 @@ export default function useSideNavLinks({
 
   const Links = useMemo(() => {
     const links: NavLink[] = [];
+
+    (interfaceConfig.externalLinks ?? []).forEach((externalLink, index) => {
+      const builtinIcon =
+        externalLink.icon != null ? builtinLinkIcons[externalLink.icon] : undefined;
+      links.push({
+        /** Config-driven label is a free-form string, not a static translation key. */
+        title: externalLink.name as TranslationKeys,
+        label: '',
+        icon: externalLink.iconURL
+          ? makeImageIcon(externalLink.iconURL)
+          : (builtinIcon ?? ExternalLink),
+        id: `external-link-${index}`,
+        onClick: () => window.open(externalLink.url, '_blank', 'noopener,noreferrer'),
+      });
+    });
+
+    if (interfaceConfig.externalAgents && interfaceConfig.externalAgents.length > 0) {
+      links.push({
+        title: 'com_nav_external_agents',
+        label: '',
+        icon: AssistantIcon,
+        id: 'external-agents',
+        Component: ExternalAgentsPanel,
+      });
+    }
 
     if (
       endpointsConfig?.[EModelEndpoint.agents] &&
@@ -203,6 +234,8 @@ export default function useSideNavLinks({
     hasAccessToMemories,
     hasAccessToReadMemories,
     interfaceConfig.parameters,
+    interfaceConfig.externalAgents,
+    interfaceConfig.externalLinks,
     endpointType,
     hasAccessToBookmarks,
     availableMCPServers,

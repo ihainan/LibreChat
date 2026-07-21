@@ -3,9 +3,16 @@ import { createContext, useCallback, useContext, useMemo, useState, ReactNode } 
 const STORAGE_KEY = 'side:active-panel';
 export const DEFAULT_PANEL = 'conversations';
 
+/**
+ * Panels that only launch external links (e.g. DingTalk assistants) must never be
+ * the landing view on app open — they are actions, not a home tab. If one was the
+ * last selected panel, fall back to the conversation history on the next load.
+ */
+const NON_LANDING_PANELS = new Set(['external-agents']);
+
 function getInitialActivePanel(): string {
   const saved = localStorage.getItem(STORAGE_KEY);
-  return saved ? saved : DEFAULT_PANEL;
+  return saved && !NON_LANDING_PANELS.has(saved) ? saved : DEFAULT_PANEL;
 }
 
 interface ActivePanelContextType {

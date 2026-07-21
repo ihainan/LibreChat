@@ -472,6 +472,7 @@
   "com_nav_enable_cloud_browser_voice": "Use cloud-based voices",
   "com_nav_engine": "Engine",
   "com_nav_enter_to_send": "Press Enter to send messages",
+  "com_nav_external_agents": "DingTalk Assistants",
   "com_nav_export": "Export",
   "com_nav_export_all_message_branches": "Export all message branches",
   "com_nav_export_conversation": "Export conversation",
