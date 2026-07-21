@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Outlet } from 'react-router-dom';
 import { useMediaQuery } from '@librechat/client';
@@ -70,7 +70,10 @@ export default function Root() {
           <AgentsMapContext.Provider value={agentsMap}>
             <PromptGroupsProvider>
               <Banner onHeightChange={setBannerHeight} />
-              <div className="flex" style={{ height: `calc(100dvh - ${bannerHeight}px)` }}>
+              <div
+                className="app-viewport flex"
+                style={{ '--banner-height': `${bannerHeight}px` } as CSSProperties}
+              >
                 <div className="relative z-0 flex h-full w-full overflow-hidden">
                   <UnifiedSidebar />
                   <div

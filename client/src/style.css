@@ -1572,6 +1572,34 @@ html {
   height: 100%;
 }
 
+/**
+ * Full-viewport app container. `100vh` is the baseline so older WebViews (e.g. the DingTalk
+ * Android in-app browser) that don't support `dvh` still get a definite height and keep the
+ * height chain intact. Modern engines upgrade to `dvh` via @supports. Wrapping the override in
+ * @supports (instead of two `height` declarations) keeps the fallback safe from CSS minifiers.
+ */
+.app-viewport {
+  height: calc(100vh - var(--banner-height, 0px));
+}
+@supports (height: 100dvh) {
+  .app-viewport {
+    height: calc(100dvh - var(--banner-height, 0px));
+  }
+}
+
+@media (max-width: 767px) {
+  .preset-dialog-viewport {
+    height: 100vh;
+    max-height: 100vh;
+  }
+  @supports (height: 100dvh) {
+    .preset-dialog-viewport {
+      height: 100dvh;
+      max-height: 100dvh;
+    }
+  }
+}
+
 .markdown {
   max-width: none;
   font-size: var(--markdown-font-size, var(--font-size-base));
