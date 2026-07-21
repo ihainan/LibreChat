@@ -728,6 +728,7 @@ export const interfaceSchema = z
     externalAgents: z.array(externalAgentSchema).optional(),
     externalLinks: z.array(externalLinkSchema).optional(),
     suggestions: suggestionsSchema.optional(),
+    hiddenDepartments: z.array(z.string()).optional(),
     mcpServers: mcpServersSchema.optional(),
     modelSelect: z.boolean().optional(),
     parameters: z.boolean().optional(),

@@ -41,6 +41,7 @@ export async function loadDefaultInterface({
     externalAgents: interfaceConfig?.externalAgents,
     externalLinks: interfaceConfig?.externalLinks,
     suggestions: interfaceConfig?.suggestions,
+    hiddenDepartments: interfaceConfig?.hiddenDepartments,
 
     // Permissions - only include if explicitly configured
     bookmarks: interfaceConfig?.bookmarks,

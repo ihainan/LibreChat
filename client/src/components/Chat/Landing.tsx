@@ -27,7 +27,7 @@ function getTextSizeClass(text: string | undefined | null) {
   return 'text-lg sm:text-md';
 }
 
-export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: boolean }) {
+export default function Landing() {
   const { conversation } = useChatContext();
   const agentsMap = useAgentsMapContext();
   const assistantMap = useAssistantsMapContext();
@@ -132,9 +132,16 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     return margin;
   }, [lineCount, description, textHasMultipleLines, contentHeight]);
 
+  const hiddenDepartments = startupConfig?.interface?.hiddenDepartments ?? [];
   const deptLabel = Array.from(
     new Set(
       (user?.departments ?? [])
+        .filter(
+          (d) =>
+            !hiddenDepartments.some(
+              (h) => (d.deptName?.includes(h) ?? false) || (d.fullPath?.includes(h) ?? false),
+            ),
+        )
         .map((d) => d.deptName || d.fullPath || '')
         .filter((label) => label.length > 0),
     ),
@@ -148,7 +155,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
 
   return (
     <div
-      className={`flex h-full transform-gpu flex-col items-center justify-center pb-16 transition-all duration-200 ${centerFormOnLanding ? 'max-h-full sm:max-h-0' : 'max-h-full'} ${getDynamicMargin}`}
+      className={`flex w-full transform-gpu flex-col items-center justify-center pb-8 transition-all duration-200 ${getDynamicMargin}`}
     >
       <div ref={contentRef} className="flex flex-col items-center gap-0 p-2">
         {showDeptEyebrow && (

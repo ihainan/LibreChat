@@ -32,7 +32,6 @@ function LoadingSpinner() {
 function ChatView({ index = 0 }: { index?: number }) {
   const { conversationId } = useParams();
   const rootSubmission = useRecoilValue(store.submissionByIndex(index));
-  const centerFormOnLanding = useRecoilValue(store.centerFormOnLanding);
 
   const methods = useForm<ChatFormValues>({
     defaultValues: { text: '' },
@@ -73,7 +72,7 @@ function ChatView({ index = 0 }: { index?: number }) {
   } else if (!isLandingPage) {
     content = <MessagesView messagesTree={messagesTree} />;
   } else {
-    content = <Landing centerFormOnLanding={centerFormOnLanding} />;
+    content = <Landing />;
   }
 
   return (
@@ -88,20 +87,27 @@ function ChatView({ index = 0 }: { index?: number }) {
                   className={cn(
                     'flex flex-col',
                     isLandingPage
-                      ? 'flex-1 items-center justify-end sm:justify-center'
+                      ? 'min-h-0 flex-1 items-center overflow-y-auto pt-14'
                       : 'h-full overflow-y-auto',
                   )}
                 >
-                  {content}
-                  <div
-                    className={cn(
-                      'w-full',
-                      isLandingPage && 'max-w-3xl transition-all duration-200 xl:max-w-4xl',
-                    )}
-                  >
-                    <ChatForm index={index} />
-                    {isLandingPage ? <ConversationStarters /> : <Footer />}
-                  </div>
+                  {isLandingPage ? (
+                    <div className="my-auto flex w-full flex-col items-center py-4">
+                      {content}
+                      <div className="w-full max-w-3xl px-4 transition-all duration-200 sm:px-0 xl:max-w-4xl">
+                        <ChatForm index={index} />
+                        <ConversationStarters />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {content}
+                      <div className="w-full">
+                        <ChatForm index={index} />
+                        <Footer />
+                      </div>
+                    </>
+                  )}
                 </div>
                 {isLandingPage && <Footer />}
               </>
