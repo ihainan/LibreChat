@@ -44,6 +44,31 @@ function getDefaultMaxContextTokens(): number {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
+/**
+ * Default system prompt injected into ephemeral agents (the `smart-router` gateway
+ * model) when the caller did not supply their own `promptPrefix`. It enforces the
+ * two-source retrieval policy for 中关村两院 questions: entity / expert / list /
+ * achievement / relation questions must consult BOTH the knowledge graph
+ * (ask_knowledge_graph) and the knowledge base (search_knowledge) rather than only
+ * one. Tunable via ZGCAI_DEFAULT_INSTRUCTIONS; set it to an empty string to disable.
+ */
+const ZGCAI_DEFAULT_INSTRUCTIONS = `你是中关村两院（中关村学院 / 中关村人工智能研究院）的内部知识助手，有两个互补的检索工具：
+- ask_knowledge_graph（知识图谱）：结构化的实体与关系（任职、研究方向、参与、合作、师承，以及 faculty/student 等身份类别），擅长“谁-关系-什么”“某机构/项目有哪些人”。
+- search_knowledge（知识库）：文章、讲座实录、成果报道、制度与培养方案等叙述性文档，是人物头衔与简介、专家与团队构成、科研成果与事件、时间与权威出处的主要来源。
+
+检索与作答策略：
+1. 当问题涉及两院的人物/专家、成员或成果清单、团队、项目、关系、人物画像、最新进展、核实或比较时，必须同时调用 ask_knowledge_graph 与 search_knowledge，再合并作答，不要只用其中一个。
+2. 仅当问题明确只属于单一模态时才可只调一个：纯规章/流程/制度 → 只用 search_knowledge；单个原子关系的是否判定 → 只用 ask_knowledge_graph。拿不准时默认双源。
+3. 同义归并：AI4Math / AI for Mathematics / AI for Maths 视为同一研究方向；名称的空格、标点差异视为同一实体，检索时覆盖这些写法。
+4. 交叉校验：两源相互补全与印证；一源有、另一源无的信息如实呈现并标注来源，不得因某一源查不到就断言“不存在”。
+5. 身份甄别：区分教授/研究员/导师（专家）与学员/在校生/选拔营参与者，不得把学员称为“专家”或“核心成员”。
+6. 分层作答（核心专家 → 其他研究人员 → 学员/参与者），标注关键结论来源；覆盖可能不全时明确说明“可能不完整”，不要臆造。`;
+
+function getDefaultInstructions(): string {
+  const raw = process.env.ZGCAI_DEFAULT_INSTRUCTIONS;
+  return raw === undefined ? ZGCAI_DEFAULT_INSTRUCTIONS : raw;
+}
+
 export interface LoadAgentDeps {
   getAgent: (searchParameter: { id: string }) => Promise<Agent | null>;
   getMCPServerTools: (
@@ -130,7 +155,11 @@ export async function loadEphemeralAgent(
     }
   }
 
-  const instructions = req.body?.promptPrefix;
+  // Respect a caller-supplied prompt; otherwise inject the two-source retrieval
+  // policy so the gateway model consults both the knowledge graph and knowledge
+  // base for 两院 questions instead of picking a single tool.
+  const promptPrefix = req.body?.promptPrefix;
+  const instructions = promptPrefix?.trim() ? promptPrefix : getDefaultInstructions() || undefined;
 
   // Get endpoint config for modelDisplayLabel fallback
   const appConfig = req.config;
