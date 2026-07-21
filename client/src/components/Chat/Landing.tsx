@@ -91,11 +91,11 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
       }
       return localize('com_ui_good_morning');
     }
-    // Afternoon (12 PM to 4:59 PM)
-    else if (hours < 17) {
+    // Afternoon (12 PM to 6:59 PM)
+    else if (hours < 19) {
       return localize('com_ui_good_afternoon');
     }
-    // Evening (5 PM to 8:59 PM)
+    // Evening (7 PM to 11:59 PM)
     else {
       return localize('com_ui_good_evening');
     }
