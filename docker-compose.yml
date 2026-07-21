@@ -12,6 +12,16 @@ services:
     build:
       context: .
       target: node
+      # Build-time only proxy so in-container npm/apk downloads go through the fast
+      # mainland-reachable proxy. Docker injects these predefined ARGs during build
+      # steps and strips them from the final image (no runtime effect).
+      args:
+        HTTP_PROXY: http://proxy.zgci.org:57777
+        HTTPS_PROXY: http://proxy.zgci.org:57777
+        http_proxy: http://proxy.zgci.org:57777
+        https_proxy: http://proxy.zgci.org:57777
+        NO_PROXY: localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,100.64.0.0/10,mongodb,meilisearch,*.local
+        no_proxy: localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,100.64.0.0/10,mongodb,meilisearch,*.local
     ports:
       - "${PORT}:${PORT}"
       - "23330:3080"
@@ -35,6 +45,7 @@ services:
       - ./images:/app/client/public/images
       - ./uploads:/app/uploads
       - ./logs:/app/logs
+      - ./data:/app/data
   mongodb:
     container_name: chat-mongodb
     image: mongo:8.0.20
