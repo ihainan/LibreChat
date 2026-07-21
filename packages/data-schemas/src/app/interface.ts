@@ -52,6 +52,7 @@ export async function loadDefaultInterface({
     temporaryChat: interfaceConfig?.temporaryChat,
     runCode: interfaceConfig?.runCode,
     webSearch: interfaceConfig?.webSearch,
+    artifacts: interfaceConfig?.artifacts,
     fileSearch: interfaceConfig?.fileSearch,
     fileCitations: interfaceConfig?.fileCitations,
     peoplePicker: interfaceConfig?.peoplePicker,

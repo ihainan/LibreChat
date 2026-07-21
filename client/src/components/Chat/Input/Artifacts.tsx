@@ -4,6 +4,7 @@ import { CheckboxButton } from '@librechat/client';
 import { ArtifactModes } from 'librechat-data-provider';
 import { WandSparkles, ChevronDown } from 'lucide-react';
 import { useBadgeRowContext } from '~/Providers';
+import { useGetStartupConfig } from '~/data-provider';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 
@@ -15,6 +16,7 @@ interface ArtifactsToggleState {
 function Artifacts() {
   const localize = useLocalize();
   const context = useBadgeRowContext();
+  const { data: startupConfig } = useGetStartupConfig();
   const { toggleState, debouncedChange, isPinned } = context?.artifacts ?? {};
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -72,6 +74,10 @@ function Artifacts() {
       debouncedChange({ value: ArtifactModes.CUSTOM });
     }
   }, [isCustomEnabled, debouncedChange]);
+
+  if (startupConfig?.interface?.artifacts === false) {
+    return null;
+  }
 
   if (!isEnabled && !isPinned) {
     return null;
