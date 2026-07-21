@@ -2,6 +2,29 @@ export function getMcpUrl(): string | undefined {
   return process.env.DINGTALK_MCP_URL || undefined;
 }
 
+/** Department data source: 'api' (DingTalk Open API), 'mcp', or '' (auto: api when appkey present). */
+export function getDeptSource(): 'api' | 'mcp' | '' {
+  const v = (process.env.DEPT_SOURCE || '').toLowerCase();
+  return v === 'api' || v === 'mcp' ? v : '';
+}
+
+export function getAppKey(): string | undefined {
+  return process.env.DINGTALK_APPKEY || undefined;
+}
+
+export function getAppSecret(): string | undefined {
+  return process.env.DINGTALK_APPSECRET || undefined;
+}
+
+export function getOapiBase(): string {
+  return process.env.DINGTALK_OAPI_BASE || 'https://oapi.dingtalk.com';
+}
+
+/** Whether to drop hidden departments (and their subtrees) when building the tree via Open API. */
+export function getPruneHidden(): boolean {
+  return process.env.DINGTALK_PRUNE_HIDDEN !== 'false';
+}
+
 export function getMcpTimeoutMs(): number {
   return Number(process.env.DINGTALK_MCP_TIMEOUT_MS) || 60_000;
 }
@@ -27,10 +50,7 @@ export function getUserDeptStaleMs(): number {
 }
 
 export const MCP_TOOLS = {
-  subDeptsByDeptId:
-    process.env.DINGTALK_MCP_TOOL_GET_SUB_DEPTS || 'get_sub_depts_by_dept_id',
-  userInfoByUserIds:
-    process.env.DINGTALK_MCP_TOOL_GET_USER_INFO || 'get_user_info_by_user_ids',
-  searchUserByKeyword:
-    process.env.DINGTALK_MCP_TOOL_SEARCH_USER || 'search_user_by_key_word',
+  subDeptsByDeptId: process.env.DINGTALK_MCP_TOOL_GET_SUB_DEPTS || 'get_sub_depts_by_dept_id',
+  userInfoByUserIds: process.env.DINGTALK_MCP_TOOL_GET_USER_INFO || 'get_user_info_by_user_ids',
+  searchUserByKeyword: process.env.DINGTALK_MCP_TOOL_SEARCH_USER || 'search_user_by_key_word',
 } as const;

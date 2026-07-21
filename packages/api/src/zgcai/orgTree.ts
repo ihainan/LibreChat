@@ -1,6 +1,14 @@
 import { logger } from '@librechat/data-schemas';
 import { crawlDeptTree, DeptNode } from './dingtalk';
-import { getOrgRootDeptId, getOrgRootDeptName, getOrgTreeRefreshIntervalMs, getMcpUrl } from './config';
+import { buildOrgTreeFromApi } from './dingtalkApi';
+import {
+  getOrgRootDeptId,
+  getOrgRootDeptName,
+  getOrgTreeRefreshIntervalMs,
+  getMcpUrl,
+  getDeptSource,
+  getAppKey,
+} from './config';
 
 interface OrgTreeState {
   tree: Map<number, DeptNode>;
@@ -12,19 +20,23 @@ let refreshTimer: ReturnType<typeof setInterval> | null = null;
 let inFlightRefresh: Promise<OrgTreeState | null> | null = null;
 
 async function refresh(): Promise<OrgTreeState | null> {
-  if (!getMcpUrl()) {
+  const source = getDeptSource() || (getAppKey() ? 'api' : 'mcp');
+  if (source === 'mcp' && !getMcpUrl()) {
     logger.warn('[zgcai/orgTree] DINGTALK_MCP_URL not configured — skipping refresh');
     return state;
   }
 
   try {
-    const tree = await crawlDeptTree(getOrgRootDeptId(), getOrgRootDeptName());
+    const tree =
+      source === 'api'
+        ? await buildOrgTreeFromApi()
+        : await crawlDeptTree(getOrgRootDeptId(), getOrgRootDeptName());
     if (tree.size <= 1) {
       logger.warn('[zgcai/orgTree] Crawled tree is empty or only root — keeping previous state');
       return state;
     }
     state = { tree, refreshedAt: Date.now() };
-    logger.info(`[zgcai/orgTree] Refreshed: ${tree.size} departments`);
+    logger.info(`[zgcai/orgTree] Refreshed: ${tree.size} departments (source=${source})`);
     return state;
   } catch (err) {
     logger.error(`[zgcai/orgTree] Refresh failed: ${(err as Error).message}`);

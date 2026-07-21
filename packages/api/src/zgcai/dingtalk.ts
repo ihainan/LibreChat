@@ -76,22 +76,53 @@ function extractResult<T>(body: string, contentType: string): T {
   }
 
   if (result && typeof result === 'object') {
-    const obj = result as { content?: Array<{ type?: string; text?: string }>; structuredContent?: unknown };
+    const obj = result as {
+      content?: Array<{ type?: string; text?: string }>;
+      structuredContent?: unknown;
+    };
     if (obj.structuredContent !== undefined) {
+      assertNotFalseSuccess(obj.structuredContent);
       return obj.structuredContent as T;
     }
     if (obj.content?.[0]?.type === 'text' && obj.content[0].text != null) {
-      return JSON.parse(obj.content[0].text) as T;
+      const parsed = JSON.parse(obj.content[0].text) as unknown;
+      assertNotFalseSuccess(parsed);
+      return parsed as T;
     }
   }
 
   return result as T;
 }
 
+/**
+ * The MCP gateway can return a "false success" (HTTP 200, no JSON-RPC error, isError:false) with the
+ * real failure hidden as `{"success": false, ...}` in the tool payload. Treat it as an error so it
+ * propagates instead of being silently read as an empty result (which drops entire dept subtrees).
+ */
+function assertNotFalseSuccess(payload: unknown): void {
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    (payload as { success?: boolean }).success === false
+  ) {
+    throw new Error(`MCP tool false-success: ${JSON.stringify(payload)}`);
+  }
+}
+
 interface SubDeptResponse {
   success?: boolean;
-  result?: Array<{ deptId?: number | string; dept_id?: number | string; deptName?: string; dept_name?: string }>;
-  list?: Array<{ deptId?: number | string; dept_id?: number | string; deptName?: string; dept_name?: string }>;
+  result?: Array<{
+    deptId?: number | string;
+    dept_id?: number | string;
+    deptName?: string;
+    dept_name?: string;
+  }>;
+  list?: Array<{
+    deptId?: number | string;
+    dept_id?: number | string;
+    deptName?: string;
+    dept_name?: string;
+  }>;
 }
 
 function parseSubDepts(raw: unknown): Array<{ deptId: number; deptName: string }> {
@@ -117,7 +148,9 @@ function parseSubDepts(raw: unknown): Array<{ deptId: number; deptName: string }
   return out;
 }
 
-export async function getSubDepts(deptId: number): Promise<Array<{ deptId: number; deptName: string }>> {
+export async function getSubDepts(
+  deptId: number,
+): Promise<Array<{ deptId: number; deptName: string }>> {
   const raw = await callTool(MCP_TOOLS.subDeptsByDeptId, { deptId });
   return parseSubDepts(raw);
 }
@@ -132,14 +165,18 @@ export async function searchUserIdsByKeyword(keyword: string): Promise<string[]>
     return [];
   }
   try {
-    const raw = (await callTool(MCP_TOOLS.searchUserByKeyword, { keyWord: trimmed })) as SearchUserResponse;
+    const raw = (await callTool(MCP_TOOLS.searchUserByKeyword, {
+      keyWord: trimmed,
+    })) as SearchUserResponse;
     const ids = raw?.userId;
     if (!Array.isArray(ids)) {
       return [];
     }
     return ids.map((v) => String(v)).filter((v) => v.length > 0);
   } catch (err) {
-    logger.warn(`[zgcai/dingtalk] searchUserIdsByKeyword failed for "${trimmed}": ${(err as Error).message}`);
+    logger.warn(
+      `[zgcai/dingtalk] searchUserIdsByKeyword failed for "${trimmed}": ${(err as Error).message}`,
+    );
     return [];
   }
 }
@@ -263,8 +300,10 @@ async function traverse(
   try {
     subs = await getSubDepts(deptId);
   } catch (err) {
-    logger.warn(`[zgcai/dingtalk] getSubDepts failed for ${deptId}: ${(err as Error).message}`);
-    return;
+    // Abort the whole crawl rather than silently drop this dept's subtree; the caller keeps the
+    // previous good tree, so a transient failure never produces a partially-populated org tree.
+    logger.error(`[zgcai/dingtalk] getSubDepts failed for ${deptId}: ${(err as Error).message}`);
+    throw err;
   }
 
   for (const child of subs) {
