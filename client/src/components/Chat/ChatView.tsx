@@ -92,13 +92,17 @@ function ChatView({ index = 0 }: { index?: number }) {
                   )}
                 >
                   {isLandingPage ? (
-                    <div className="my-auto flex w-full flex-col items-center py-4">
-                      {content}
-                      <div className="w-full max-w-3xl px-4 transition-all duration-200 sm:px-0 xl:max-w-4xl">
-                        <ChatForm index={index} />
-                        <ConversationStarters />
+                    <>
+                      <div className="max-h-[22vh] w-full grow" aria-hidden="true" />
+                      <div className="flex w-full flex-col items-center pb-4">
+                        {content}
+                        <div className="w-full max-w-3xl px-4 transition-all duration-200 sm:px-0 xl:max-w-4xl">
+                          <ChatForm index={index} />
+                          <ConversationStarters />
+                        </div>
                       </div>
-                    </div>
+                      <div className="w-full grow" aria-hidden="true" />
+                    </>
                   ) : (
                     <>
                       {content}
