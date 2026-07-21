@@ -113,6 +113,11 @@ export default function useSideNavLinks({
       });
     }
 
+    /** Divider below the external entries (conversations + links + agents), off from the panels. */
+    if (links.length > 0) {
+      links[links.length - 1].dividerAfter = true;
+    }
+
     if (
       endpointsConfig?.[EModelEndpoint.agents] &&
       hasAccessToAgents &&

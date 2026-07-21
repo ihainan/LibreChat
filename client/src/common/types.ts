@@ -130,6 +130,8 @@ export type NavLink = {
   onClick?: (e?: React.MouseEvent) => void;
   variant?: 'default' | 'ghost';
   id: string;
+  /** Render a divider directly below this rail item (groups it off from the items after). */
+  dividerAfter?: boolean;
 };
 
 export interface DataColumnMeta {

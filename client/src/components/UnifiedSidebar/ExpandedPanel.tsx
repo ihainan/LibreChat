@@ -1,4 +1,4 @@
-import { memo, useCallback, lazy, Suspense } from 'react';
+import { memo, useCallback, lazy, Suspense, Fragment } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRecoilValue } from 'recoil';
 import { SquarePen } from 'lucide-react';
@@ -160,15 +160,17 @@ function ExpandedPanel({
       <div className="mx-2 border-b border-border-light" />
       <div className="flex flex-col gap-1 overflow-y-auto">
         {links.map((link) => (
-          <NavIconButton
-            key={link.id}
-            link={link}
-            isActive={link.id === effectiveActive}
-            expanded={expanded ?? true}
-            setActive={setActive}
-            onExpand={onExpand}
-            onCollapse={onCollapse}
-          />
+          <Fragment key={link.id}>
+            <NavIconButton
+              link={link}
+              isActive={link.id === effectiveActive}
+              expanded={expanded ?? true}
+              setActive={setActive}
+              onExpand={onExpand}
+              onCollapse={onCollapse}
+            />
+            {link.dividerAfter === true && <div className="mx-2 border-b border-border-light" />}
+          </Fragment>
         ))}
       </div>
 
