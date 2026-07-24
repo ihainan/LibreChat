@@ -664,6 +664,16 @@ export type TAcceptTermsResponse = {
 
 export type TBannerResponse = TBanner | null;
 
+export type THighlight = {
+  id: string;
+  title: string;
+  source: string;
+  category: 'policy' | 'tech';
+  url: string;
+  date: string;
+};
+export type THighlightsResponse = { highlights: THighlight[] };
+
 export type TUpdateFeedbackRequest = {
   feedback?: TMinimalFeedback;
 };

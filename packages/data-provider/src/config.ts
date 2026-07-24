@@ -763,6 +763,7 @@ export const interfaceSchema = z
     runCode: z.boolean().optional(),
     webSearch: z.boolean().optional(),
     artifacts: z.boolean().optional(),
+    highlights: z.boolean().optional(),
     peoplePicker: z
       .object({
         users: z.boolean().optional(),

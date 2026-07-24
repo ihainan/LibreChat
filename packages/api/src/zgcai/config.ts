@@ -2,6 +2,19 @@ export function getMcpUrl(): string | undefined {
   return process.env.DINGTALK_MCP_URL || undefined;
 }
 
+/** Base URL of the internal Intelligence Engine API (empty disables the highlights feature). */
+export function getIntelBaseUrl(): string | undefined {
+  return process.env.ZGCAI_INTEL_BASE_URL || undefined;
+}
+
+export function getHighlightsTtlMs(): number {
+  return Number(process.env.ZGCAI_HIGHLIGHTS_TTL_MS) || 45 * 60 * 1000;
+}
+
+export function getHighlightsCount(): number {
+  return Number(process.env.ZGCAI_HIGHLIGHTS_COUNT) || 4;
+}
+
 /** Department data source: 'api' (DingTalk Open API), 'mcp', or '' (auto: api when appkey present). */
 export function getDeptSource(): 'api' | 'mcp' | '' {
   const v = (process.env.DEPT_SOURCE || '').toLowerCase();

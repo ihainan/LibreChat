@@ -40,6 +40,8 @@ const buildQuery = (params: Record<string, unknown>): string => {
 };
 
 export const health = () => `${BASE_URL}/health`;
+
+export const zgcaiHighlights = () => `${BASE_URL}/api/zgcai/highlights`;
 export const user = () => `${BASE_URL}/api/user`;
 
 export const balance = () => `${BASE_URL}/api/balance`;

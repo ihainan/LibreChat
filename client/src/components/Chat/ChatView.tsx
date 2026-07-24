@@ -9,6 +9,7 @@ import type { ChatFormValues } from '~/common';
 import { ChatContext, AddedChatContext, ChatFormProvider, useFileMapContext } from '~/Providers';
 import { useAddedResponse, useResumeOnLoad, useAdaptiveSSE, useChatHelpers } from '~/hooks';
 import ConversationStarters from './Input/ConversationStarters';
+import Highlights from './Highlights';
 import { useGetMessagesByConvoId } from '~/data-provider';
 import MessagesView from './Messages/MessagesView';
 import Presentation from './Presentation';
@@ -99,6 +100,7 @@ function ChatView({ index = 0 }: { index?: number }) {
                         <div className="w-full max-w-3xl px-4 transition-all duration-200 sm:px-0 xl:max-w-4xl">
                           <ChatForm index={index} />
                           <ConversationStarters />
+                          <Highlights />
                         </div>
                       </div>
                       <div className="w-full grow" aria-hidden="true" />

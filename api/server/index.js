@@ -25,6 +25,7 @@ const {
   ensureOrgTree,
   startOrgTreeRefreshLoop,
   startUserDeptRefreshCron,
+  warmUpHighlights,
 } = require('@librechat/api');
 const { connectDb, indexSync } = require('~/db');
 const initializeOAuthReconnectManager = require('./services/initializeOAuthReconnectManager');
@@ -166,6 +167,7 @@ const startServer = async () => {
   app.use('/api/keys', routes.keys);
   app.use('/api/api-keys', routes.apiKeys);
   app.use('/api/user', routes.user);
+  app.use('/api/zgcai', routes.zgcai);
   app.use('/api/search', routes.search);
   app.use('/api/messages', routes.messages);
   app.use('/api/convos', routes.convos);
@@ -241,6 +243,7 @@ const startServer = async () => {
       })
       .catch((err) => logger.error('[zgcai] Org tree warm-up failed:', err));
     startOrgTreeRefreshLoop();
+    warmUpHighlights();
     try {
       startUserDeptRefreshCron();
     } catch (err) {

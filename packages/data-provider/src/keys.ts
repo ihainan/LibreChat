@@ -51,6 +51,7 @@ export enum QueryKeys {
   health = 'health',
   userTerms = 'userTerms',
   banner = 'banner',
+  zgcaiHighlights = 'zgcaiHighlights',
   /* Memories */
   memories = 'memories',
   principalSearch = 'principalSearch',

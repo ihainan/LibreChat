@@ -959,6 +959,10 @@ export function acceptTerms(): Promise<t.TAcceptTermsResponse> {
   return request.post(endpoints.acceptUserTerms());
 }
 
+export function getHighlights(): Promise<t.THighlightsResponse> {
+  return request.get(endpoints.zgcaiHighlights());
+}
+
 export function getBanner(): Promise<t.TBannerResponse> {
   return request.get(endpoints.banner());
 }

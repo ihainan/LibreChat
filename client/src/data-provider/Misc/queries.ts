@@ -18,6 +18,23 @@ export const useGetBannerQuery = (
   });
 };
 
+export const useGetHighlightsQuery = (
+  config?: UseQueryOptions<t.THighlightsResponse>,
+): QueryObserverResult<t.THighlightsResponse> => {
+  const queriesEnabled = useRecoilValue<boolean>(store.queriesEnabled);
+  return useQuery<t.THighlightsResponse>(
+    [QueryKeys.zgcaiHighlights],
+    () => dataService.getHighlights(),
+    {
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      ...config,
+      enabled: (config?.enabled ?? true) === true && queriesEnabled,
+    },
+  );
+};
+
 export const useGetUserBalance = (
   config?: UseQueryOptions<t.TBalanceResponse>,
 ): QueryObserverResult<t.TBalanceResponse> => {
