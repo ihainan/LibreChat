@@ -3,7 +3,12 @@ import { ArrowUpRight } from 'lucide-react';
 import { useMediaQuery } from '@librechat/client';
 import { EModelEndpoint, Constants } from 'librechat-data-provider';
 import type { TUser, TSuggestions } from 'librechat-data-provider';
-import { useChatContext, useAgentsMapContext, useAssistantsMapContext } from '~/Providers';
+import {
+  useChatContext,
+  useChatFormContext,
+  useAgentsMapContext,
+  useAssistantsMapContext,
+} from '~/Providers';
 import {
   useGetAssistantDocsQuery,
   useGetEndpointsQuery,
@@ -11,6 +16,7 @@ import {
 } from '~/data-provider';
 import { useSubmitMessage, useAuthContext, useLocalize } from '~/hooks';
 import { getIconEndpoint, getEntity } from '~/utils';
+import { mainTextareaId } from '~/common';
 
 /** Number of suggestions shown on small screens, leaving room for additional landing content. */
 const MOBILE_SUGGESTION_COUNT = 2;
@@ -109,10 +115,28 @@ const ConversationStarters = () => {
     return pickRandom(starters, MOBILE_SUGGESTION_COUNT);
   }, [starters, usingSuggestions, isSmallScreen]);
 
+  const methods = useChatFormContext();
   const { submitMessage } = useSubmitMessage();
+  /**
+   * Department suggestions may contain placeholders (e.g. "某位专家"), so a click fills the
+   * composer and focuses it for editing instead of sending. Agent-authored starters are complete
+   * prompts and keep their one-click send.
+   */
   const sendConversationStarter = useCallback(
-    (text: string) => submitMessage({ text }),
-    [submitMessage],
+    (text: string) => {
+      if (!usingSuggestions) {
+        submitMessage({ text });
+        return;
+      }
+      methods.setValue('text', text, { shouldValidate: true });
+      const textarea = document.getElementById(mainTextareaId) as HTMLTextAreaElement | null;
+      if (textarea) {
+        textarea.focus();
+        const end = textarea.value.length;
+        textarea.setSelectionRange(end, end);
+      }
+    },
+    [usingSuggestions, methods, submitMessage],
   );
 
   if (!displayStarters.length) {
